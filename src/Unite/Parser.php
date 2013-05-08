@@ -1,5 +1,5 @@
 <?php
-namespace Taste;
+namespace Unite;
 
 class Parser {
 

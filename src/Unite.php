@@ -1,11 +1,44 @@
 <?php
-namespace Taste;
 
-class Runner {
-	public $files = array();
+class Unite {
+    /**
+     * @var Unite\Handler\FileHandler[]
+     */
+    public $files = array();
+    /**
+     * @var Unite\Handler\ClassHandler[]
+     */
     public $cases = array();
+    /**
+     * @var Unite\Handler\MethodHandler[]
+     */
     public $tests = array();
 
+    /**
+     * @var Unite\Request
+     */
+    public $request;
+
+    public $printer;
+
+    public $listeners = [];
+
+    /**
+     * @param $request
+     */
+    public function __construct(Unite\Request $request) {
+        $this->request = $request;
+        if($request->paths) {
+            foreach($request->paths as $path) {
+                $this->addPath($path);
+            }
+        }
+    }
+
+    /**
+     * @param $paths
+     * @return $this
+     */
     public function load($paths) {
         foreach((array)$paths as $path) {
 	        $this->addPath($path);
@@ -32,24 +65,24 @@ class Runner {
 		    if($file->isDir()) {
 				$list += $this->_scanDir($file->getRealPath());
 		    } elseif($file->isFile() && $file->getExtension() === "php") {
-			    $list[$file->getRealPath()] = $file->getFileInfo('Taste\Handler\FileHandler');
+			    $list[$file->getRealPath()] = $file->getFileInfo('Unite\Handler\FileHandler');
 		    }
 	    }
 
 	    foreach($list as $file) {
-		    /* @var Handler\FileHandler $file*/
+		    /* @var Unite\Handler\FileHandler $file*/
 		    if($this->isTestFile($file)) {
-			    $this->files[ $file->getRealPath() ] = $file;
+			    $this->setTestFile()->files[ $file->getRealPath() ] = $file;
 			    foreach($file->getClasses() as $class) {
-				    /* @var Handler\ClassHandler $class */
-				    if($this->isTestClass($class)) {
-					    $this->cases[ $class->name ] = $file->classes[ $class->name ] = $class;
+				    /* @var Unite\Handler\ClassHandler $class */
+				    if($this->isTestCase($class)) {
+					    $this->setTestCase()->cases[ $class->name ] = $file->classes[ $class->name ] = $class;
 
 					    foreach($class->getPublicMethods() as $method) {
 						    $class->methods[ $method->name ] = $method;
-						    /* @var Handler\MethodHandler $method */
+						    /* @var Unite\Handler\MethodHandler $method */
 						    if($this->isTest($method)) {
-								$this->tests[ $method->name ] = $method;
+								$this->setTest()->tests[ $method->name ] = $method;
 						    }
 					    }
 				    }
@@ -76,7 +109,7 @@ class Runner {
 			/* @var \splFileInfo $file*/
 			if($file->isFile()) {
 				if($file->getExtension() === "php") {
-					$list[$file->getRealPath()] = $file->getFileInfo('Taste\Handler\FileHandler');
+					$list[$file->getRealPath()] = $file->getFileInfo('Unite\Handler\FileHandler');
 				}
 			} elseif($file->isDir()) {
 				$list += $this->_scanDir($file->getRealPath());
@@ -86,27 +119,25 @@ class Runner {
 		return $list;
 	}
 
-	public function isTestFile(Handler\FileHandler $file) {
+	public function isTestFile(Unite\Handler\FileHandler $file) {
 		return (bool)stripos($file->getBasename(), "test.php");
 	}
 
-	public function isTestClass(Handler\ClassHandler $class) {
+	public function isTestCase(Unite\Handler\ClassHandler $class) {
 		return (bool)stripos($class->name, "test");
 	}
 
-	public function isTest(Handler\MethodHandler $test) {
+	public function isTest(Unite\Handler\MethodHandler $test) {
 		return stripos($test->name, "test") === 0 || isset($test->param["test"]);
 	}
 
 	public function run() {
         foreach($this->cases as $case) {
-            /* @var Handler\ClassHandler $case */
             $class_name = $case->name;
             $case->object = new $class_name($this);
             $case->object->before();
         }
 		foreach($this->tests as $test) {
-			/* @var Handler\MethodHandler $test */
 			if(isset($test->param["depend"])) {
 				if(!strpos($test->param["depend"], "::")) {
 					
@@ -141,7 +172,7 @@ class Runner {
 			}
 		}
         foreach($this->cases as $case) {
-            /* @var Handler\ClassHandler $case */
+            /* @var Unite\Handler\ClassHandler $case */
             $case->object->after();
         }
 	}

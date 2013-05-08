@@ -1,6 +1,6 @@
 <?php
-namespace Taste\Handler;
-use Taste\Parser;
+namespace Unite\Handler;
+use Unite\Parser;
 
 class ClassHandler extends \ReflectionClass {
 	/**
@@ -8,21 +8,34 @@ class ClassHandler extends \ReflectionClass {
 	 */
 	public $file;
 	/**
-	 * @var \Taste\TestCase
+	 * @var \Unite\TestCase
 	 */
 	public $object;
 	public $param   = [];
 	public $params  = [];
 	/**
-	 * @var array of MethodHandler
+	 * @var MethodHandler[]
 	 */
 	public $methods = [];
+
+    public $before;
+
+    public $after;
 
 	public function __construct($class, $file) {
 		$this->file = $file;
 		parent::__construct($class);
 		list($this->param, $this->params) = Parser::parseDocBlock($this->getDocComment());
+        $traits = class_uses($class);
 	}
+
+    public function before() {
+
+    }
+
+    public function after() {
+
+    }
 
 	public function getPublicMethods() {
 		$methods = [];

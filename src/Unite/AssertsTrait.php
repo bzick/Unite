@@ -1,10 +1,11 @@
 <?php
-namespace Taste;
+namespace Unite;
 /**
- * Class Asserts
+ * Collection of asserts
  * @author Ivan Shalganov <owner@bzick.net>
  */
-trait Asserts {
+trait AssertsTrait {
+    use ConditionTrait;
 
     public function assert($test, $expect, $strict = false, $message = "") {
         if(($strict && $test !== $expect) || (!$strict && $test != $expect)) {
@@ -85,7 +86,7 @@ trait Asserts {
      * */
     public function assertMatch($test, $regex) {
         if(!preg_match($regex, $test)) {
-            $this->fail("иalue not valid by regexp $regex");
+            $this->fail("value is invalid by regexp $regex");
         }
     }
     /**

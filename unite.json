@@ -1,0 +1,10 @@
+{
+    "project": "Unite Testing Framework",
+    "tests": "tests/",
+    "resources": "tests/resources",
+    "log-junit": "logs/%D/junit.xml",
+    "log-json":  "logs/%D/log.json",
+    "log-tap":   "logs/%D/log.tap",
+    "black-list": [],
+    "white-list": []
+}

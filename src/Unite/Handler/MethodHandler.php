@@ -1,6 +1,6 @@
 <?php
-namespace Taste\Handler;
-use Taste\Parser;
+namespace Unite\Handler;
+use Unite\Parser;
 
 class MethodHandler extends \ReflectionMethod {
 	public $cls;

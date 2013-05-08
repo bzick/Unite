@@ -1,11 +1,11 @@
 <?php
-namespace Taste;
+namespace Unite;
 /**
  * Class Pointer
  * @author Ivan Shalganov <bzick@megagroup.ru>
  * @copyright MegaGroup.ru
  */
-trait Pointer {
+trait PointerTrait {
     public $points = array();
     public $points_passed = array();
 

@@ -1,0 +1,23 @@
+{
+    "name": "bzick/unite",
+    "description": "A PHP Unit Testing framework",
+    "license": "MIT",
+    "version": "1.0.0",
+    "authors": [
+        {
+            "name": "Ivan Shalganov",
+            "email": "bzick@megagroup.ru"
+        }
+    ],
+    "require": {
+        "php": ">=5.4"
+    },
+    "autoload": {
+        "psr-0": { "Unite\\": "src" },
+        "classmap": ["src/Unite.php"]
+    },
+    "bin": [
+        "bin/unite"
+    ]
+}
+

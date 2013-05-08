@@ -1,5 +1,5 @@
 <?php
-namespace Taste\Handler;
+namespace Unite\Handler;
 
 class FileHandler extends \splFileInfo {
 	public $classes = [];
