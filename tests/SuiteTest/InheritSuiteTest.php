@@ -14,7 +14,7 @@ use Unite\TestCase;
 class InheritSuiteTest extends TestCase {
 
 
-	public function testCollectionSuites() {
+    public function testCollectionSuites() {
 
-	}
+    }
 }

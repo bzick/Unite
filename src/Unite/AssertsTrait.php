@@ -31,19 +31,19 @@ trait AssertsTrait {
         }
     }
 
-	public function assertType($test, $type) {
+    public function assertType($test, $type) {
         if(gettype($test) != $type) {
             $this->fail("expected type $type, but ".gettype($test)." given");
         }
-	}
+    }
 
     public function assertInt($test, $value = null) {
-		$this->assertType($test, "integer");
-	    if(!is_null($value)) {
+        $this->assertType($test, "integer");
+        if(!is_null($value)) {
             if($test !== $value) {
                 $this->fail("expected $value, but $test given");
             }
-	    }
+        }
     }
 
     public function assertFloat($test, $value = null) {
@@ -61,7 +61,7 @@ trait AssertsTrait {
     }
 
 
-	public function assertException($test, $message = null, $code = null) {
+    public function assertException($test, $message = null, $code = null) {
         if(!is_object($test)) {
             $this->fail("expected Exception object, but ".gettype($test)." given");
         }
@@ -76,7 +76,7 @@ trait AssertsTrait {
         if($code !== null && $code != $test->getCode()) {
             $this->fail("expected exception code {$code}, buе ".$test->getCode()." given");
         }
-	}
+    }
 
     /**
      * Assert. Ожидается значение удовлетворяющее регулярному выражению

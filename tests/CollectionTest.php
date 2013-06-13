@@ -10,7 +10,7 @@ class CollectionTest extends TestCase {
 
     }
 
-	public function testParse() {
+    public function testParse() {
 
-	}
+    }
 }
