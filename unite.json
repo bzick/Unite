@@ -1,10 +1,22 @@
 {
-    "project": "Unite Testing Framework",
+    "project": "PHP Unit Testing Framework",
     "tests": "tests/",
+    "bootstrap": "",
     "resources": "tests/resources",
-    "log-junit": "logs/%D/junit.xml",
+    "log-junit": "logs/{%date}/junit.xml",
     "log-json":  "logs/%D/log.json",
     "log-tap":   "logs/%D/log.tap",
     "black-list": [],
-    "white-list": []
+    "white-list": [],
+    "suite-class": "",
+    "file-class": "",
+    "case-class": "",
+    "test-class": "",
+    "modules": {
+        "Aqua\\Aqua": {
+            "selenium": false,
+            "browsers": "auto",
+            "force-screens": false
+        }
+    }
 }

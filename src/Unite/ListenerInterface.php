@@ -2,28 +2,86 @@
 
 namespace Unite;
 
-
-use Unite\Handler\ClassHandler;
-use Unite\Handler\MethodHandler;
+use Unite\Test\Suite;
+use Unite\Test\TestCase;
 
 interface ListenerInterface {
 
-    public function begin();
+	/**
+	 * Start of the testing
+	 * @param \Unite $unite
+	 * @return mixed
+	 */
+	public function begin(\Unite $unite);
 
-    public function beginTestSuit($suit);
+	/**
+	 * Start of the test suite
+	 * @param Suite $suit
+	 * @return mixed
+	 */
+	public function beginTestSuite(Suite $suit);
 
-    public function beginTestCase(ClassHandler $case);
+	/**
+	 * Start of the test case
+	 * @param TestCase $case
+	 * @return mixed
+	 */
+	public function beginTestCase(TestCase $case);
 
-    public function beginTest(MethodHandler $test);
+	/**
+	 * Start of the test
+	 * @param Test $test
+	 * @return mixed
+	 */
+	public function beginTest(Test $test);
 
-    public function assert($assert);
+	/**
+	 * Assert
+	 * @param Assert $assert
+	 * @return mixed
+	 */
+	public function assert(Assert $assert);
 
-    public function endTest(MethodHandler $test);
+	/**
+	 * Event invoke if test was skipped by TestCase's reason (error or skip)
+	 * @param Test $test
+	 * @return mixed
+	 */
+	public function drainTest(Test $test);
 
-    public function endTestCase(ClassHandler $case);
+	/**
+	 * End of the test
+	 * @param Test $test
+	 * @return mixed
+	 */
+	public function endTest(Test $test);
 
-    public function endTestSuit($suit);
+	/**
+	 * Event invoke if TestCase was skipped by TestSuite's reason (error or skip)
+	 * @param TestCase $case
+	 * @return mixed
+	 */
+	public function drainTestCase(TestCase $case);
 
-    public function end();
+	/**
+	 * End of the test case
+	 * @param TestCase $case
+	 * @return mixed
+	 */
+	public function endTestCase(TestCase $case);
+
+	/**
+	 * End of the test suite
+	 * @param Suite $suit
+	 * @return mixed
+	 */
+	public function endTestSuite(Suite $suit);
+
+	/**
+	 * End of the testing
+	 * @param \Unite $unite
+	 * @return mixed
+	 */
+	public function end(\Unite $unite);
 
 }

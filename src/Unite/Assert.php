@@ -3,6 +3,6 @@
 namespace Unite;
 
 
-class Coverage {
+class Assert {
 
 }
