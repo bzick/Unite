@@ -29,6 +29,7 @@ class Suite extends \splFileInfo implements \RecursiveIterator {
      * @var Suite
      */
     public $suite;
+    public $cases = array();
 
     /**
      * @param string $path
@@ -39,6 +40,10 @@ class Suite extends \splFileInfo implements \RecursiveIterator {
         $this->path = $this->getRealPath();
         $this->name = $this->getBasename();
         $this->suite = $suite;
+    }
+
+    public function __toString() {
+        return "TestSuite({$this->name})";
     }
 
     /**

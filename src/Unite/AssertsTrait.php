@@ -11,30 +11,35 @@ trait AssertsTrait {
         if(($strict && $test !== $expect) || (!$strict && $test != $expect)) {
             $this->fail("expected ".var_export($expect, 1).", but ".var_export($test, 1)." given");
         }
+        \Unite::assert();
     }
 
     public function assertTrue($test) {
         if($test !== true) {
             $this->fail("expected bool(true), but ".var_export($test, 1)." given");
         }
+        \Unite::assert();
     }
 
     public function assertFalse($test) {
         if($test !== false) {
             $this->fail("expected bool(false), but ".var_export($test, 1)." given");
         }
+        \Unite::assert();
     }
 
     public function assertNull($test) {
         if($test !== null) {
             $this->fail("expected NULL, but ".var_export($test, 1)." given");
         }
+        \Unite::assert();
     }
 
     public function assertType($test, $type) {
         if(gettype($test) != $type) {
             $this->fail("expected type $type, but ".gettype($test)." given");
         }
+        \Unite::assert();
     }
 
     public function assertInt($test, $value = null) {
@@ -44,6 +49,7 @@ trait AssertsTrait {
                 $this->fail("expected $value, but $test given");
             }
         }
+        \Unite::assert();
     }
 
     public function assertFloat($test, $value = null) {
@@ -51,6 +57,7 @@ trait AssertsTrait {
         if(!is_null($value)) {
             $this->fail("expected $value, but $test given");
         }
+        \Unite::assert();
     }
 
     public function assertArray($test, $value = null) {
@@ -58,6 +65,7 @@ trait AssertsTrait {
         if(!is_null($value)) {
             $this->fail("expected ".var_export($value, 1).", but ".var_export($test, 1)." given");
         }
+        \Unite::assert();
     }
 
 
@@ -76,6 +84,7 @@ trait AssertsTrait {
         if($code !== null && $code != $test->getCode()) {
             $this->fail("expected exception code {$code}, buе ".$test->getCode()." given");
         }
+        \Unite::assert();
     }
 
     /**
@@ -88,6 +97,7 @@ trait AssertsTrait {
         if(!preg_match($regex, $test)) {
             $this->fail("value is invalid by regexp $regex");
         }
+        \Unite::assert();
     }
     /**
      * Assert. Ожидаемое значение удовлетворяет маске
@@ -114,6 +124,6 @@ trait AssertsTrait {
                 $this->fail("the last part of string does not satisfy the mask \noriginal: {$test}\n\nmask: {$mask}");
             }
         }
-
+        \Unite::assert();
     }
 }

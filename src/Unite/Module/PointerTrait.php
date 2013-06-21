@@ -1,5 +1,5 @@
 <?php
-namespace Unite;
+namespace Unite\Module;
 /**
  * Class Pointer
  * @author Ivan Shalganov <bzick@megagroup.ru>

@@ -21,9 +21,9 @@ class File extends \splFileInfo {
 
     /**
      * Find classes in file and create test case for each
-     * @return array
+     * @return TestCase[]
      */
-    private function _getClasses() {
+    public function getClasses() {
         $classes = [];
         $tokens = token_get_all(file_get_contents($this->getRealPath()));
         $ns = "";
@@ -58,7 +58,7 @@ class File extends \splFileInfo {
     public function setTestFile(\Unite $unite) {
         $this->unite = $unite;
         require_once($this->getPathname());
-        $this->classes = $this->_getClasses();
+//        $this->classes = $this->_getClasses();
     }
 
 }

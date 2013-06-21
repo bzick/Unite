@@ -17,6 +17,9 @@
         "psr-0": { "Unite\\": "src" },
         "classmap": ["src/Unite.php"]
     },
+    "autoload-dev": {
+        "classmap": ["tests/"]
+    },
     "suggest": {
         "ext-pcntl": "allow start tests with multi-threading",
         "ext-posix": "allow process control"

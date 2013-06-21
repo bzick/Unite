@@ -2,7 +2,7 @@
 namespace Unite;
 
 /**
- * Simple test case realization
+ * Simple test case
  * @package Unite
  */
 class TestCase {

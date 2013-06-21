@@ -9,12 +9,12 @@
 
 namespace Unite\SuiteTest;
 
+use Unite\Module\MemCheckTrait;
 use Unite\TestCase;
 
 class InheritSuiteTest extends TestCase {
 
-
     public function testCollectionSuites() {
-
+//        throw new \Exception("something wrong");
     }
 }

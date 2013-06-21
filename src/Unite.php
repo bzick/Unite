@@ -5,11 +5,18 @@ namespace {
     use Unite\ListenerInterface;
     use Unite\Printer;
     use Unite\Test\RootSuite;
+    use Unite\Test\Suite;
 
     /**
      * Unit Testing engine
      */
     class Unite {
+        const TEST = 1;
+        const TEST_CASE = 2;
+        /**
+         * @var Unite\Test current test
+         */
+        private static $_test;
         /**
          * @var Unite\Test\Suite[]
          */
@@ -35,14 +42,35 @@ namespace {
          */
         public $request;
 
+        /**
+         * @var ListenerInterface
+         */
         public $printer;
 
-        public $listeners = [];
+        /**
+         * @var SplObjectStorage
+         */
+        public $listeners;
+
+        /**
+         * @var Unite\ModuleAbstract
+         */
+        public $modules = array();
+
+        public static function assert($message = "") {
+            if(self::$_test) {
+                self::$_test->asserts++;
+                self::$_test->case->asserts++;
+                self::$_test->case->suite->asserts++;
+                self::$_test->unite->asserts++;
+            }
+        }
 
         /**
          * @param $request
          */
         public function __construct(Unite\Request $request) {
+            $this->listeners = new \SplObjectStorage();
             $this->request = $request;
             $this->suite = new RootSuite($this);
             $this->setPrinter(new Printer($this));
@@ -56,28 +84,61 @@ namespace {
                 }
             }
             set_error_handler(function ($errno, $error, $file, $line) {
-                    throw new ErrorException("$error in $file:$line", $errno);
-                });
-        }
-
-        public function setPrinter(ListenerInterface $printer) {
-            $this->printer = $printer;
-            $this->addListener($printer);
-        }
-
-        public function addListener(ListenerInterface $printer) {
-            $this->listeners[] = $printer;
+                throw new ErrorException("$error in $file:$line", $errno);
+            });
         }
 
         /**
+         * Set custom printer class
+         * @param ListenerInterface $printer
+         */
+        public function setPrinter(ListenerInterface $printer) {
+            if($this->printer) {
+                unset($this->listeners[$this->printer]);
+            }
+            $this->printer = $printer;
+            $this->listeners[$printer] = false;
+        }
+
+        /**
+         * Add event listener
+         * @param ListenerInterface $printer
+         */
+        public function addListener(ListenerInterface $printer) {
+            $this->listeners[$printer] = false;
+        }
+
+        /**
+         * Add test by pathname
          * @param $paths
          * @return $this
          */
-        public function load($paths) {
-            foreach((array)$paths as $path) {
-                $this->addPath($path);
+//        public function load($paths) {
+//            foreach((array)$paths as $path) {
+//                $this->addPath($path);
+//            }
+//            return $this;
+//        }
+
+        /**
+         * Add module
+         * @param string $module class name
+         * @param Unite\TestCase $case
+         * @return $this
+         * @throws Unite\ErrorException
+         */
+        public function addModule($module, $case = null) {
+//            var_dump($module." ".$case);
+            if(isset($this->modules[$module])) {
+                throw new ErrorException("Module $module already registered");
+            } elseif(!class_exists($module)) {
+                throw new ErrorException("Module $module not found");
             }
+            $this->modules[$module] = new $module($this);
             return $this;
+//            if(($m instanceof ListenerInterface) && !isset($this->listeners[$m])) {
+//                $case[$m] = false;
+//            }
         }
 
         /**
@@ -96,25 +157,23 @@ namespace {
             }
             foreach(new RecursiveIteratorIterator($this->suite, RecursiveIteratorIterator::SELF_FIRST) as $file) {
                 /* @var Unite\Test\File|Unite\Test\Suite $file */
-                if($file instanceof \Unite\Test\Suite) {
+                if($file instanceof Suite) {
                     $file->setTestSuite($this);
                     $this->suites[ $file->getRealPath() ] = $file;
                 } elseif($this->isTestFile($file)) {
                     $file->setTestFile($this);
                     $this->files[ $file->getRealPath() ] = $file;
-                    foreach($file->classes as $class) {
+                    foreach($file->getClasses() as $class) {
                         /* @var Unite\Test\TestCase $class */
                         $this->classes[ $class->name ] = $class;
                         if($this->isTestCase($class)) {
                             $class->setTestCase($this);
-                            $this->cases[ $class->name ] = $class;
-                            foreach($class->methods as $name => $method) {
+                            $file->suite->cases[ $class->name ] = $this->cases[ $class->name ] = $class;
+                            foreach($class->getPublicMethods() as $method) {
                                 /* @var Unite\Test $method */
                                 if($this->isTest($method)) {
                                     $method->setTest($this);
-                                    $this->tests[ $method->real_name ] = $method;
-                                } else {
-                                    unset($class->methods[$name]);
+                                    $class->tests[ $method->real_name ] = $this->tests[ $method->real_name ] = $method;
                                 }
                             }
                         }
@@ -148,6 +207,14 @@ namespace {
          */
         public function isTest(Unite\Test $test) {
             return stripos($test->name, "test") === 0 || $test->hasParam("test");
+        }
+
+        public function registerDataSchema($schema, callable $callback) {
+            $this->_schema[$schema] = $callback;
+        }
+
+        public function registerDataType($type, callable $callback) {
+            $this->_data_type[$type] = $callback;
         }
 
         private function _trigger($event, $arg) {
@@ -186,16 +253,13 @@ namespace {
                     $this->_trigger("beginTestCase", $test->case);
                     $test->case->before();
                 }
-                try {
-                    $this->_trigger("beginTest", $test);
-                    $test->before();
-                    $test->run([]);
-                    $this->_trigger("endTest", $test);
-                    $test->success();
-                } catch(\Exception $e) {
-                    $test->resolve($e);
-                }
+                $this->_trigger("beginTest", $test);
+                self::$_test = $test;
+                $test->before();
+                $test->run([]);
+                $this->_trigger("endTest", $test);
                 $test->after();
+                self::$_test = null;
                 $prev = $test;
             }
             $this->_trigger("endTestCase", $prev->case);
@@ -203,7 +267,13 @@ namespace {
             $this->_trigger("endTestSuite", $prev->case->file->suite);
             $prev->case->file->suite->after();
         }
+
+        public function onParam($param, $scope, $event, $callback) {
+//            $this->param[$param]
+        }
     }
+
+
 }
 
 namespace Unite {
